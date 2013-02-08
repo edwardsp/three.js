@@ -64,6 +64,24 @@ THREE.OBJLoader.prototype = {
 
 		}
 
+		function get_group_vertex_id( global_id ) {
+
+			if ( vertex_lookup.hasOwnProperty( global_id ) ) {
+
+				return vertex_lookup[ global_id ];
+
+			}
+
+			geometry.vertices.push(
+				vertices[ global_id ]
+			);	
+
+			vertex_lookup[ global_id ] = vertex_count;
+
+			return vertex_count++;
+
+		}
+
 		function face3( a, b, c, normals ) {
 
 			return new THREE.Face3( a, b, c, normals );
@@ -80,7 +98,6 @@ THREE.OBJLoader.prototype = {
 
 			if ( geometry.vertices.length > 0 ) {
 
-				geometry.mergeVertices();
 				geometry.computeCentroids();
 				geometry.computeFaceNormals();
 				geometry.computeBoundingSphere();
@@ -89,8 +106,8 @@ THREE.OBJLoader.prototype = {
 
 				geometry = new THREE.Geometry();
 				mesh = new THREE.Mesh( geometry, material );
-
-				verticesCount = 0;
+				vertex_lookup = [];
+				vertex_count = 0;
 
 			}
 
@@ -114,9 +131,12 @@ THREE.OBJLoader.prototype = {
 		var mesh = new THREE.Mesh( geometry, material );
 
 		var vertices = [];
-		var verticesCount = 0;
 		var normals = [];
 		var uvs = [];
+
+		// used to keep track of which points are used in a group
+		var vertex_lookup = [];
+		var vertex_count = 0;
 
 		// v float float float
 
@@ -196,32 +216,19 @@ THREE.OBJLoader.prototype = {
 
 				if ( result[ 4 ] === undefined ) {
 
-					geometry.vertices.push(
-						vertices[ parseInt( result[ 1 ] ) - 1 ],
-						vertices[ parseInt( result[ 2 ] ) - 1 ],
-						vertices[ parseInt( result[ 3 ] ) - 1 ]
-					);
-
 					geometry.faces.push( face3(
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++
+						get_group_vertex_id( parseInt( result[ 1 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 2 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 3 ] ) - 1 )
 					) );
 
 				} else {
 
-					geometry.vertices.push(
-						vertices[ parseInt( result[ 1 ] ) - 1 ],
-						vertices[ parseInt( result[ 2 ] ) - 1 ],
-						vertices[ parseInt( result[ 3 ] ) - 1 ],
-						vertices[ parseInt( result[ 4 ] ) - 1 ]
-					);
-
 					geometry.faces.push( face4(
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++
+						get_group_vertex_id( parseInt( result[ 1 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 2 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 3 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 4 ] ) - 1 )
 					) );
 
 				}
@@ -232,16 +239,10 @@ THREE.OBJLoader.prototype = {
 
 				if ( result[ 10 ] === undefined ) {
 
-					geometry.vertices.push(
-						vertices[ parseInt( result[ 2 ] ) - 1 ],
-						vertices[ parseInt( result[ 5 ] ) - 1 ],
-						vertices[ parseInt( result[ 8 ] ) - 1 ]
-					);
-
 					geometry.faces.push( face3(
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++
+						get_group_vertex_id( parseInt( result[ 2 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 5 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 8 ] ) - 1 )
 					) );
 
 					geometry.faceVertexUvs[ 0 ].push( [
@@ -252,18 +253,11 @@ THREE.OBJLoader.prototype = {
 
 				} else {
 
-					geometry.vertices.push(
-						vertices[ parseInt( result[ 2 ] ) - 1 ],
-						vertices[ parseInt( result[ 5 ] ) - 1 ],
-						vertices[ parseInt( result[ 8 ] ) - 1 ],
-						vertices[ parseInt( result[ 11 ] ) - 1 ]
-					);
-
 					geometry.faces.push( face4(
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++
+						get_group_vertex_id( parseInt( result[ 2 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 5 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 8 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 11 ] ) - 1 )
 					) );
 
 					geometry.faceVertexUvs[ 0 ].push( [
@@ -281,16 +275,10 @@ THREE.OBJLoader.prototype = {
 
 				if ( result[ 13 ] === undefined ) {
 
-					geometry.vertices.push(
-						vertices[ parseInt( result[ 2 ] ) - 1 ],
-						vertices[ parseInt( result[ 6 ] ) - 1 ],
-						vertices[ parseInt( result[ 10 ] ) - 1 ]
-					);
-
 					geometry.faces.push( face3(
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++,
+						get_group_vertex_id( parseInt( result[ 2 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 6 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 10 ] ) - 1 ),
 						[
 							normals[ parseInt( result[ 4 ] ) - 1 ],
 							normals[ parseInt( result[ 8 ] ) - 1 ],
@@ -306,18 +294,11 @@ THREE.OBJLoader.prototype = {
 
 				} else {
 
-					geometry.vertices.push(
-						vertices[ parseInt( result[ 2 ] ) - 1 ],
-						vertices[ parseInt( result[ 6 ] ) - 1 ],
-						vertices[ parseInt( result[ 10 ] ) - 1 ],
-						vertices[ parseInt( result[ 14 ] ) - 1 ]
-					);
-
 					geometry.faces.push( face4(
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++,
+						get_group_vertex_id( parseInt( result[ 2 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 6 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 10 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 14 ] ) - 1 ),
 						[
 							normals[ parseInt( result[ 4 ] ) - 1 ],
 							normals[ parseInt( result[ 8 ] ) - 1 ],
@@ -341,16 +322,10 @@ THREE.OBJLoader.prototype = {
 
 				if ( result[ 10 ] === undefined ) {
 
-					geometry.vertices.push(
-						vertices[ parseInt( result[ 2 ] ) - 1 ],
-						vertices[ parseInt( result[ 5 ] ) - 1 ],
-						vertices[ parseInt( result[ 8 ] ) - 1 ]
-					);
-
 					geometry.faces.push( face3(
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++,
+						get_group_vertex_id( parseInt( result[ 2 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 5 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 8 ] ) - 1 ),
 						[
 							normals[ parseInt( result[ 3 ] ) - 1 ],
 							normals[ parseInt( result[ 6 ] ) - 1 ],
@@ -360,18 +335,11 @@ THREE.OBJLoader.prototype = {
 
 				} else {
 
-					geometry.vertices.push(
-						vertices[ parseInt( result[ 2 ] ) - 1 ],
-						vertices[ parseInt( result[ 5 ] ) - 1 ],
-						vertices[ parseInt( result[ 8 ] ) - 1 ],
-						vertices[ parseInt( result[ 11 ] ) - 1 ]
-					);
-
 					geometry.faces.push( face4(
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++,
-						verticesCount ++,
+						get_group_vertex_id( parseInt( result[ 2 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 5 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 8 ] ) - 1 ),
+						get_group_vertex_id( parseInt( result[ 11 ] ) - 1 ),
 						[
 							normals[ parseInt( result[ 3 ] ) - 1 ],
 							normals[ parseInt( result[ 6 ] ) - 1 ],
